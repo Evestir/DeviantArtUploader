@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DeviantArtUploader"
         mc:Ignorable="d"
-        Title="DeVaT" Height="210" Width="550" ResizeMode="NoResize" WindowStyle="None" Background="#121212" BorderThickness="1" BorderBrush="#7160e8">
+        Title="DeVaT" Height="210" Width="550" ResizeMode="NoResize" WindowStyle="None" Background="#121212" BorderThickness="1" BorderBrush="#7160e8" Opacity="1" AllowsTransparency="True">
     <Grid>
         <StackPanel>
             <materialDesign:Card Name="DragPanel" Padding="9 8 0 8" Margin="1 1 1 1" MouseDown="DragPanel_MouseDown" Background="#1e1e1e" Foreground="#c4c4c4">
@@ -72,4 +72,13 @@
             </Image>
         </StackPanel>
     </Grid>
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Window.Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetProperty="(Window.Opacity)" From="0.0" To="1.0" Duration="00:00:0.4" AutoReverse="False"/>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </Window.Triggers>
 </Window>

@@ -38,6 +38,7 @@ namespace DeviantArtUploader
         public MainWindow()
         {
             InitializeComponent();
+            
         }
 
         bool isWide = false;
@@ -224,7 +225,7 @@ namespace DeviantArtUploader
             {
                 while (x < 1)
                 {
-                    x = x + 0.01;
+                    x = x + 0.015;
                     this.Dispatcher.Invoke(() =>
                     {
                         this.Height = 210 + Blend((float)x, 0, 650, 1f);
@@ -276,6 +277,17 @@ namespace DeviantArtUploader
                         ImageHolder.Opacity = x;
                     });
                     Thread.Sleep(1);
+                }
+            }
+            else if ((ver == 3))
+            {
+                for (double y = 0; x < 1; x += 0.01)
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        this.Opacity = y;
+                    });
+                    Thread.Sleep(100);
                 }
             }
         }
