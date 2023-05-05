@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>logo.ico</ApplicationIcon>
+    <ApplicationIcon>Logo_Dev(1).ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="logo.ico" />
+    <Content Include="Logo_Dev(1).ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -17,6 +16,8 @@
     <PackageReference Include="IdentityModel.OidcClient" Version="5.2.1" />
     <PackageReference Include="MaterialDesignThemes" Version="4.7.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="ToastNotifications" Version="2.5.1" />
+    <PackageReference Include="ToastNotifications.Messages" Version="2.5.1" />
   </ItemGroup>
 
 </Project>

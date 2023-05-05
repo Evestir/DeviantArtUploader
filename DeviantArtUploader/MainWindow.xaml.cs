@@ -23,6 +23,11 @@ using System.Runtime.InteropServices;
 using DeviantArtUploader.src;
 using System.Web;
 using System.Linq.Expressions;
+using ToastNotifications;
+using ToastNotifications.Core;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Position;
+using ToastNotifications.Messages;
 
 namespace DeviantArtUploader
 {
@@ -39,13 +44,28 @@ namespace DeviantArtUploader
         public MainWindow()
         {
             InitializeComponent();
-            AllocConsole();
         }
 
         bool isWide = false;
         int CurrentNumb = 0;
         List<string> ImageList = new List<string>();
         string CurrentShowingImageName = null;
+
+
+        public Notifier notifier = new Notifier(cfg =>
+        {
+            cfg.PositionProvider = new WindowPositionProvider(
+                parentWindow: Application.Current.MainWindow,
+                corner: Corner.TopRight,
+                offsetX: 10,
+                offsetY: 10);
+
+            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                notificationLifetime: TimeSpan.FromSeconds(3),
+                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
+
+            cfg.Dispatcher = Application.Current.Dispatcher;
+        });
 
         float Blend(float time, float startValue, float change, float duration)
         {
@@ -58,7 +78,6 @@ namespace DeviantArtUploader
             time--;
             return -change / 2 * (time * (time - 2) - 1) + startValue;
         }
-
         public class Token
         {
             public string client_id { get; set; }
@@ -75,7 +94,7 @@ namespace DeviantArtUploader
             // Get the value of the access_token field
             string accessToken = responseDict["access_token"].ToString();
 
-            Console.WriteLine("[*] Access Token is: " + accessToken);
+            //Console.WriteLine("[*] Access Token is: " + accessToken);
 
             return accessToken;
         }
@@ -84,8 +103,6 @@ namespace DeviantArtUploader
         {
             using(var client = new HttpClient())
             {
-                AllocConsole();
-
                 /* New Way */
                 if (accesstoken == string.Empty)
                 {
@@ -101,7 +118,7 @@ namespace DeviantArtUploader
                     string redirected = LoginProc.GetActiveTabUrl();
                     string authorization_code = redirected.Substring(redirected.IndexOf('=') + 1);
 
-                    Console.WriteLine("[*] Current Auth Key: " + authorization_code);
+                    notifier.ShowInformation("Found Auth Key: " + authorization_code);
 
                     /* Obtain Token */
                     var tokenObtainer = new Uri(@"https://www.deviantart.com/oauth2/token");
@@ -133,14 +150,14 @@ namespace DeviantArtUploader
                         responseString = reader.ReadToEnd();
                     }
 
-                    Console.WriteLine("[-] " + responseString);
+                    //Console.WriteLine("[-] " + responseString);
 
                     /* Submit */
                     accesstoken = GetAccessToken(responseString);
                 }
 
                 // Load the image file into a byte array
-                Console.WriteLine($"[-] Target Image Path: {PathToImage}");
+                //Console.WriteLine($"[-] Target Image Path: {PathToImage}");
 
                 // Construct the request body
                 var content = new MultipartFormDataContent();
@@ -156,17 +173,17 @@ namespace DeviantArtUploader
                 // Handle the response
                 string responseContent = await responsed.Content.ReadAsStringAsync();
                 dynamic responseData = JsonConvert.DeserializeObject(responseContent);
-                Console.WriteLine($"[*] Response: {responseData}");
+                //Console.WriteLine($"[*] Response: {responseData}");
 
                 string DeviantID = responseData.itemid;
                 if (responseData.status == "success")
                 {
-                    string deviationId = responseData.deviationid;
-                    Console.WriteLine("Deviation submitted successfully with ID: " + DeviantID);
+                    notifier.ShowInformation("Deviation submitted successfully with ID: " + DeviantID);
                 }
                 else
                 {
-                    Console.WriteLine("Error submitting deviation: " + responseData.error_message);
+                    string errormsg = responseData.error_message;
+                    notifier.ShowError("Error submitting deviation: " + errormsg);
                 }
 
                 content = null;
@@ -192,22 +209,22 @@ namespace DeviantArtUploader
                 responsed = await client.PostAsync("https://www.deviantart.com/api/v1/oauth2/stash/publish", content);
                 responseContent = await responsed.Content.ReadAsStringAsync();
                 responseData = JsonConvert.DeserializeObject(responseContent);
-                Console.WriteLine($"[*] Response: {responseData}");
+                //Console.WriteLine($"[*] Response: {responseData}");
 
                 if (responseData.status == "success")
                 {
                     string deviationId = responseData.deviationid;
-                    Console.WriteLine("[*] Deviation published successfully");
+                    notifier.ShowSuccess("[*] Deviation published successfully");
                 }
                 else
                 {
-                    Console.WriteLine("[*] Error publishing deviation: " + responseData.error_message);
+                    string errormsg = responseData.error_message;
+                    notifier.ShowError("[*] Error publishing deviation: " + errormsg);
                 }
                 responseData = null;
                 content = null;
             }
         }
-
         private void Update(int ver)
         {
             double x = 0;
@@ -281,7 +298,6 @@ namespace DeviantArtUploader
                 }
             }
         }
-
         private void Opener_Click(object sender, RoutedEventArgs e)
         {
             if (isWide == false && this.Height == 210) 
@@ -307,7 +323,6 @@ namespace DeviantArtUploader
                 isWide = false;
             }
         }
-
         private bool ShowImage(int y)
         {
             if (ImageList != null && y < ImageList.Count)
@@ -318,7 +333,6 @@ namespace DeviantArtUploader
             }
             else return false;
         }
-
         private void Find_Click(object sender, RoutedEventArgs e)
         {
             string PathLocation = PathLoc.Text;
@@ -369,7 +383,6 @@ namespace DeviantArtUploader
                 return;
             }
         }
-       
         private void Yess_Click(object sender, RoutedEventArgs e)
         {
             if (CurrentNumb != 0)
@@ -377,7 +390,7 @@ namespace DeviantArtUploader
                 CurrentNumb++;
                 if (CurrentNumb < ImageList.Count)
                 {
-                    Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
+                    //Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
 
                     Thread thread = new Thread(delegate ()
                     {
@@ -389,7 +402,7 @@ namespace DeviantArtUploader
                 else
                 {
                     CurrentNumb--;
-                    MessageBox.Show("No more images are left.");
+                    notifier.ShowError("No more images are left.");
                 }
             }
         }
@@ -399,7 +412,7 @@ namespace DeviantArtUploader
             if (CurrentNumb - 2 <= ImageList.Count && CurrentNumb > 1)
             {
                 CurrentNumb -= 1;
-                Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
+                //Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
 
                 Thread thread = new Thread(delegate ()
                 {
@@ -410,7 +423,7 @@ namespace DeviantArtUploader
             }
             else
             {
-                MessageBox.Show("No more images are left.");
+                notifier.ShowError("No more images are left.");
             }
         }
 
@@ -422,7 +435,7 @@ namespace DeviantArtUploader
             }
             else
             {
-                MessageBox.Show("Open the file first idiot.");
+                notifier.ShowError("Enter the folder first.");
             }
 
         }

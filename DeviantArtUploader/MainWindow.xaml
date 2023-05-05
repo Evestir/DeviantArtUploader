@@ -10,7 +10,7 @@
     <Grid>
         <StackPanel>
             <materialDesign:Card Name="DragPanel" Padding="9 8 0 8" Margin="1 1 1 1" MouseDown="DragPanel_MouseDown" Background="#1e1e1e" Foreground="#c4c4c4">
-                <TextBlock>DeVaT v0.1.1d</TextBlock>
+                <TextBlock>DeVaT v0.2.1d</TextBlock>
             </materialDesign:Card>
             <materialDesign:Card Padding="0 0 0 14" Margin="10 10 10 0" Background="#1c1c1c">
                 <Grid>
