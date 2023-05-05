@@ -34,14 +34,14 @@
                 </materialDesign:PackIcon>
             </Button>
             <Button Name="Yess" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="0 -32 15 0" HorizontalAlignment="Right" Width="100" Foreground="White" Click="Yess_Click">
-                <materialDesign:PackIcon Kind="Check" Width="28" Height="28">
+                <materialDesign:PackIcon Kind="ChevronRight" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
             <Button Name="Nope" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="0 -32 120 0" Width="100" HorizontalAlignment="Right" Foreground="White" Click="Nope_Click">
-                <materialDesign:PackIcon Kind="WindowClose" Width="28" Height="28">
+                <materialDesign:PackIcon Kind="ChevronLeft" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
@@ -67,7 +67,7 @@
                         BlurRadius="60"
                         Direction="90"
                         Opacity="0.4"
-                        Color="#333333"/>
+                        Color="#FFFFFF"/>
                 </Image.Effect>
             </Image>
         </StackPanel>

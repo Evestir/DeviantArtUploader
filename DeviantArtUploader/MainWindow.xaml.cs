@@ -22,6 +22,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using DeviantArtUploader.src;
 using System.Web;
+using System.Linq.Expressions;
 
 namespace DeviantArtUploader
 {
@@ -38,13 +39,12 @@ namespace DeviantArtUploader
         public MainWindow()
         {
             InitializeComponent();
-            
+            AllocConsole();
         }
 
         bool isWide = false;
         int CurrentNumb = 0;
         List<string> ImageList = new List<string>();
-        BitmapImage realorigin = null;
         string CurrentShowingImageName = null;
 
         float Blend(float time, float startValue, float change, float duration)
@@ -59,13 +59,6 @@ namespace DeviantArtUploader
             return -change / 2 * (time * (time - 2) - 1) + startValue;
         }
 
-        public class Artwork
-        {
-            public string title { get; set; }
-            public string access_token { get; set; }
-            public string description { get; set; }
-            public string[] keywords { get; set; }
-        }
         public class Token
         {
             public string client_id { get; set; }
@@ -74,7 +67,6 @@ namespace DeviantArtUploader
             public string code { get; set; }
             public string redirect_uri { get; set; }
         }
-
         public static string GetAccessToken(string response)
         {
             // Parse the JSON into a dictionary
@@ -87,7 +79,6 @@ namespace DeviantArtUploader
 
             return accessToken;
         }
-
         string accesstoken = string.Empty;
         private async Task Upload(string PathToImage)
         {
@@ -217,7 +208,7 @@ namespace DeviantArtUploader
             }
         }
 
-        public void Update(int ver)
+        private void Update(int ver)
         {
             double x = 0;
 
@@ -259,7 +250,6 @@ namespace DeviantArtUploader
                     Thread.Sleep(1);
                 }
 
-
                 this.Dispatcher.Invoke(() =>
                 {
                     ShowImage(CurrentNumb);
@@ -279,7 +269,7 @@ namespace DeviantArtUploader
                     Thread.Sleep(1);
                 }
             }
-            else if ((ver == 3))
+            else if (ver == 3)
             {
                 for (double y = 0; x < 1; x += 0.01)
                 {
@@ -318,14 +308,12 @@ namespace DeviantArtUploader
             }
         }
 
-        public bool ShowImage(int y)
+        private bool ShowImage(int y)
         {
-            if (ImageList != null)
+            if (ImageList != null && y < ImageList.Count)
             {
-                realorigin = new BitmapImage(new Uri(ImageList[y]));
                 CurrentShowingImageName = ImageList[y].ToString();
                 ImageHolder.Source = new BitmapImage(new Uri(ImageList[y]));
-                CurrentNumb++;
                 return true;
             }
             else return false;
@@ -339,7 +327,7 @@ namespace DeviantArtUploader
                 string[] files = Directory.GetFiles(PathLocation); // Get all files in the directory
 
                 ImageList.Clear();
-                CurrentNumb = 0;
+                CurrentNumb = 1; 
 
                 foreach (string file in files)
                 {
@@ -381,47 +369,38 @@ namespace DeviantArtUploader
                 return;
             }
         }
-
+       
         private void Yess_Click(object sender, RoutedEventArgs e)
         {
-            string sourceFile = ImageList[CurrentNumb - 1].ToString();
-
-            var PPath = System.IO.Directory.GetParent(PathLoc.Text);
-
-            string destinationPath = PPath.ToString() + "\\Selected Images";
-            if (!Directory.Exists(destinationPath))
+            if (CurrentNumb != 0)
             {
-                Directory.CreateDirectory(destinationPath);
-            }
-
-            try
-            {
-                File.Copy(sourceFile, destinationPath + "\\" + System.IO.Path.GetFileName(sourceFile), true);
-            }
-            catch (IOException iox)
-            {
-                Console.WriteLine(iox.Message);
-            }
-
-            if (CurrentNumb + 1 <= ImageList.Count)
-            {
-                Thread thread = new Thread(delegate ()
+                CurrentNumb++;
+                if (CurrentNumb < ImageList.Count)
                 {
-                    Update(2);
-                });
+                    Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
 
-                thread.Start();
-            }
-            else
-            {
-                MessageBox.Show("No more images are left.");
+                    Thread thread = new Thread(delegate ()
+                    {
+                        Update(2);
+                    });
+
+                    thread.Start();
+                }
+                else
+                {
+                    CurrentNumb--;
+                    MessageBox.Show("No more images are left.");
+                }
             }
         }
 
         private void Nope_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb + 1 <= ImageList.Count)
+            if (CurrentNumb - 2 <= ImageList.Count && CurrentNumb > 1)
             {
+                CurrentNumb -= 1;
+                Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
+
                 Thread thread = new Thread(delegate ()
                 {
                     Update(2);
@@ -437,9 +416,9 @@ namespace DeviantArtUploader
 
         private void UploadBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb - 1 >= 0)
+            if (CurrentNumb >= 0)
             {
-                Upload(ImageList[CurrentNumb - 1].ToString());
+                Upload(ImageList[CurrentNumb].ToString());
             }
             else
             {
