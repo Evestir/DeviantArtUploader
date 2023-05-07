@@ -28,6 +28,7 @@ using ToastNotifications.Core;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
 using ToastNotifications.Messages;
+using System.Windows.Interop;
 
 namespace DeviantArtUploader
 {
@@ -41,9 +42,44 @@ namespace DeviantArtUploader
 
         [DllImport("Kernel32")]
         public static extern void FreeConsole();
+
+        [DllImport("dwmapi.dll")]
+        private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, [In] ref bool attrValue, int attrSize);
+
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1 = 19;
+        private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+        private const int DWMWA_CAPTION_COLOR = 35;
+
+        private static bool UseImmersiveDarkMode(IntPtr handle, bool enabled)
+        {
+            if (IsWindows10OrGreater(17763))
+            {
+                var attribute = DWMWA_USE_IMMERSIVE_DARK_MODE_BEFORE_20H1;
+                if (IsWindows10OrGreater(18985))
+                {
+                    attribute = DWMWA_USE_IMMERSIVE_DARK_MODE;
+                }
+
+                bool value = enabled;
+
+                int useImmersiveDarkMode = enabled ? 1 : 0;
+                if (DwmSetWindowAttribute(handle, (int)attribute, ref value, Marshal.SizeOf<bool>()) == 1) return true;
+                else return false;
+            }
+
+            return false;
+        }
+
+        private static bool IsWindows10OrGreater(int build = -1)
+        {
+            return Environment.OSVersion.Version.Major >= 10 && Environment.OSVersion.Version.Build >= build;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
+            IntPtr hWnd = new WindowInteropHelper(this).EnsureHandle();
+            UseImmersiveDarkMode(hWnd, true);
         }
 
         bool isWide = false;
@@ -51,21 +87,10 @@ namespace DeviantArtUploader
         List<string> ImageList = new List<string>();
         string CurrentShowingImageName = null;
 
-
-        public Notifier notifier = new Notifier(cfg =>
+        public void Notify(string message, int second)
         {
-            cfg.PositionProvider = new WindowPositionProvider(
-                parentWindow: Application.Current.MainWindow,
-                corner: Corner.TopRight,
-                offsetX: 10,
-                offsetY: 10);
-
-            cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
-                notificationLifetime: TimeSpan.FromSeconds(3),
-                maximumNotificationCount: MaximumNotificationCount.FromCount(5));
-
-            cfg.Dispatcher = Application.Current.Dispatcher;
-        });
+            Snackbar.MessageQueue?.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(second));
+        }
 
         float Blend(float time, float startValue, float change, float duration)
         {
@@ -118,7 +143,7 @@ namespace DeviantArtUploader
                     string redirected = LoginProc.GetActiveTabUrl();
                     string authorization_code = redirected.Substring(redirected.IndexOf('=') + 1);
 
-                    notifier.ShowInformation("Found Auth Key: " + authorization_code);
+                    Notify($"ℹ️ Found Auth Key: {authorization_code}", 1);
 
                     /* Obtain Token */
                     var tokenObtainer = new Uri(@"https://www.deviantart.com/oauth2/token");
@@ -178,12 +203,12 @@ namespace DeviantArtUploader
                 string DeviantID = responseData.itemid;
                 if (responseData.status == "success")
                 {
-                    notifier.ShowInformation("Deviation submitted successfully with ID: " + DeviantID);
+                    Notify($"ℹ️ Deviation submitted successfully with ID: {DeviantID}", 1);
                 }
                 else
                 {
                     string errormsg = responseData.error_message;
-                    notifier.ShowError("Error submitting deviation: " + errormsg);
+                    Notify($"⚠️ Error submitting deviation: {errormsg}", 1);
                 }
 
                 content = null;
@@ -214,12 +239,12 @@ namespace DeviantArtUploader
                 if (responseData.status == "success")
                 {
                     string deviationId = responseData.deviationid;
-                    notifier.ShowSuccess("[*] Deviation published successfully");
+                    Notify("ℹ️ Deviation published successfully", 1);
                 }
                 else
                 {
                     string errormsg = responseData.error_message;
-                    notifier.ShowError("[*] Error publishing deviation: " + errormsg);
+                    Notify($"❌ Error publishing deviation: {errormsg}", 1);
                 }
                 responseData = null;
                 content = null;
@@ -286,17 +311,6 @@ namespace DeviantArtUploader
                     Thread.Sleep(1);
                 }
             }
-            else if (ver == 3)
-            {
-                for (double y = 0; x < 1; x += 0.01)
-                {
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        this.Opacity = y;
-                    });
-                    Thread.Sleep(100);
-                }
-            }
         }
         private void Opener_Click(object sender, RoutedEventArgs e)
         {
@@ -355,7 +369,7 @@ namespace DeviantArtUploader
             }
             else
             {
-                MessageBox.Show("The Intended path was not found!");
+                Notify("⚠️ The Intended path was not found!", 1);
                 return;
             }
 
@@ -379,7 +393,7 @@ namespace DeviantArtUploader
             }
             else
             {
-                MessageBox.Show("Nothing was in the folder!");
+                Notify("⚠️ The folder is empty!", 1);
                 return;
             }
         }
@@ -402,7 +416,7 @@ namespace DeviantArtUploader
                 else
                 {
                     CurrentNumb--;
-                    notifier.ShowError("No more images are left.");
+                    Notify("⚠️ No more images are left.", 1);
                 }
             }
         }
@@ -423,19 +437,19 @@ namespace DeviantArtUploader
             }
             else
             {
-                notifier.ShowError("No more images are left.");
+                Notify("⚠️ No more images are left.", 1);
             }
         }
 
         private void UploadBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb >= 0)
+            if (CurrentNumb > 0)
             {
                 Upload(ImageList[CurrentNumb].ToString());
             }
             else
             {
-                notifier.ShowError("Enter the folder first.");
+                Notify("⚠️ Enter the folder first.", 1);
             }
 
         }
