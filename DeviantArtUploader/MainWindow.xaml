@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:local="clr-namespace:DeviantArtUploader"
+        xmlns:xf="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         mc:Ignorable="d"
         Title="Deviant Art Uploader" Height="210" Width="550" ResizeMode="CanMinimize" Background="#121212" Opacity="1">
-    <Grid>
+    <Grid xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeIn}}">
         <StackPanel>
             <materialDesign:Card Padding="0 0 0 14" Margin="10 10 10 0" Background="#1c1c1c">
                 <Grid>

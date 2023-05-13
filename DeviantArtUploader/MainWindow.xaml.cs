@@ -83,7 +83,7 @@ namespace DeviantArtUploader
         }
 
         bool isWide = false;
-        int CurrentNumb = 0;
+        int CurrentNumb = -1;
         List<string> ImageList = new List<string>();
         string CurrentShowingImageName = null;
 
@@ -355,7 +355,7 @@ namespace DeviantArtUploader
                 string[] files = Directory.GetFiles(PathLocation); // Get all files in the directory
 
                 ImageList.Clear();
-                CurrentNumb = 1; 
+                CurrentNumb = 0; 
 
                 foreach (string file in files)
                 {
@@ -399,7 +399,7 @@ namespace DeviantArtUploader
         }
         private void Yess_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb != 0)
+            if (CurrentNumb != -1)
             {
                 CurrentNumb++;
                 if (CurrentNumb < ImageList.Count)
@@ -419,11 +419,15 @@ namespace DeviantArtUploader
                     Notify("⚠️ No more images are left.", 1);
                 }
             }
+            else
+            {
+                Notify("⚠️ Input the Image folder first.", 1);
+            }
         }
 
         private void Nope_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb - 2 <= ImageList.Count && CurrentNumb > 1)
+            if (CurrentNumb - 2 <= ImageList.Count && CurrentNumb > 0)
             {
                 CurrentNumb -= 1;
                 //Console.WriteLine($"Current Numb: {CurrentNumb} ImageList.Count: {ImageList.Count}");
@@ -443,13 +447,13 @@ namespace DeviantArtUploader
 
         private void UploadBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (CurrentNumb > 0)
+            if (CurrentNumb >= 0)
             {
                 Upload(ImageList[CurrentNumb].ToString());
             }
             else
             {
-                Notify("⚠️ Enter the folder first.", 1);
+                Notify("⚠️ Input the Image folder first.", 1);
             }
 
         }
