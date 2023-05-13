@@ -29,6 +29,8 @@ using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
 using ToastNotifications.Messages;
 using System.Windows.Interop;
+using System.Windows.Threading;
+using System.Windows.Media.Animation;
 
 namespace DeviantArtUploader
 {
@@ -92,16 +94,16 @@ namespace DeviantArtUploader
             Snackbar.MessageQueue?.Enqueue(message, null, null, null, false, true, TimeSpan.FromSeconds(second));
         }
 
-        float Blend(float time, float startValue, float change, float duration)
+        double Blend(double time, double startValue, double change, double duration)
         {
-            time /= duration / 2;
+            time /= duration / (double)2;
             if (time < 1)
             {
-                return change / 2 * time * time + startValue;
+                return change / (double)2 * time * time + startValue;
             }
 
             time--;
-            return -change / 2 * (time * (time - 2) - 1) + startValue;
+            return -change / (double)2 * (time * (time - (double)2) - (double)1) + startValue;
         }
         public class Token
         {
@@ -250,90 +252,82 @@ namespace DeviantArtUploader
                 content = null;
             }
         }
+        double InOutQuadBlend(double t)
+        {
+            if (t <= 0.5f)
+                return 2.0f * t * t;
+            t -= 0.5f;
+            return 2.0f * t * (1.0f - t) + 0.5f;
+        }
         private void Update(int ver)
         {
-            double x = 0;
-
             if (ver == 0)
             {
-                while (x < 1)
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
+                double x = 0;
+
+                timer.Tick += (s, e) =>
                 {
-                    x = x + 0.015;
-                    this.Dispatcher.Invoke(() =>
+                    x += 0.01;
+                    if (x >= 1)
                     {
-                        this.Height = 210 + Blend((float)x, 0, 650, 1f);
-                        ImageHolder.Opacity = x;
-                    });
-                    Thread.Yield();
-                }
+                        timer.Stop();
+                        this.Height = (double)856;
+                    }
+                    else
+                    {
+                        this.Height = 204 + InOutQuadBlend(x)*(double)652;
+                    }
+                };
+
+                timer.Start();
             }
             else if (ver == 1)
             {
-                while (x < 1)
+                var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1) };
+                double x = 0;
+
+                timer.Tick += (s, e) =>
                 {
-                    x = x + 0.01;
-                    this.Dispatcher.Invoke(() =>
+                    x += 0.02;
+                    if (x >= 1)
                     {
-                        this.Height = 860 - Blend((float)x, 0, 650, 1f);
-                        ImageHolder.Opacity = 1 - x;
-                    });
-                    Thread.Yield();
-                }
+                        timer.Stop();
+                        this.Height = (double)204;
+                    }
+                    else
+                    {
+                        this.Height = 856 - Blend(x, 0f, 652f, 1f);
+                    }
+                };
+
+                timer.Start();
             }
             else if (ver == 2)
             {
-                while (x < 1)
-                {
-                    x = x + 0.02;
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        ImageHolder.Opacity = 1 - x;
-                    });
-                    Thread.Sleep(1);
-                }
-
                 this.Dispatcher.Invoke(() =>
                 {
                     ShowImage(CurrentNumb);
                 });
 
-                x = 0;
+                Thread.Sleep(80);
 
-                Thread.Sleep(100);
-
-                while (x < 1)
+                this.Dispatcher.Invoke(() =>
                 {
-                    x = x + 0.01;
-                    this.Dispatcher.Invoke(() =>
-                    {
-                        ImageHolder.Opacity = x;
-                    });
-                    Thread.Sleep(1);
-                }
+                    ImageHolder.Opacity = 1;
+                });
             }
         }
         private void Opener_Click(object sender, RoutedEventArgs e)
         {
-            if (isWide == false && this.Height == 210) 
+            if (isWide == false && this.Height == 204) 
             {
-                Thread thread = new Thread(delegate ()
-                {
-                    Update(0);
-                });
-
-                thread.Start();
-
+                Update(0);
                 isWide = true;
             }
-            else if (isWide == true)
+            else if (isWide == true && this.Height == 856)
             {
-                Thread thread = new Thread(delegate ()
-                {
-                    Update(1);
-                });
-
-                thread.Start();
-
+                Update(1);
                 isWide = false;
             }
         }
@@ -378,12 +372,7 @@ namespace DeviantArtUploader
                 if (isWide == false)
                 {
                     ShowImage(CurrentNumb);
-                    Thread thread = new Thread(delegate ()
-                    {
-                        Update(0);
-                    });
-
-                    thread.Start();
+                    Update(0);
                     isWide = true;
                 }
                 else if (isWide == true)
@@ -415,6 +404,12 @@ namespace DeviantArtUploader
                 }
                 else
                 {
+                    Thread thread = new Thread(delegate ()
+                    {
+                        Update(2);
+                    });
+                    thread.Start();
+
                     CurrentNumb--;
                     Notify("⚠️ No more images are left.", 1);
                 }
@@ -441,6 +436,12 @@ namespace DeviantArtUploader
             }
             else
             {
+                Thread thread = new Thread(delegate ()
+                {
+                    Update(2);
+                });
+                thread.Start();
+
                 Notify("⚠️ No more images are left.", 1);
             }
         }

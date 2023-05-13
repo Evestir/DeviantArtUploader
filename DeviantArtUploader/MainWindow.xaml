@@ -7,68 +7,101 @@
         xmlns:local="clr-namespace:DeviantArtUploader"
         xmlns:xf="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         mc:Ignorable="d"
-        Title="Deviant Art Uploader" Height="210" Width="550" ResizeMode="CanMinimize" Background="#121212" Opacity="1">
+        Title="Deviant Art Uploader" Height="204" Width="550" ResizeMode="CanMinimize" Background="#1f1f1f" Opacity="1">
     <Grid xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeIn}}">
         <StackPanel>
-            <materialDesign:Card Padding="0 0 0 14" Margin="10 10 10 0" Background="#1c1c1c">
+            <StackPanel.Effect>
+                <DropShadowEffect
+                        BlurRadius="20"
+                        Direction="0"
+                        ShadowDepth="0"
+                        Opacity="0.6"
+                        Color="#1f1f1f"/>
+            </StackPanel.Effect>
+            <materialDesign:Card Padding="0 0 0 8" Margin="10 10 10 0" Background="#1d1d1d">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBox Name="PathLoc" Grid.Row="0" Margin="15 -2 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Image Directory" TextAlignment="Left" FontSize="12px" Foreground="#ffffff"/>
+                    <TextBox Name="PathLoc" Grid.Row="0" Margin="15 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Image Directory" TextAlignment="Left" FontSize="12px" Foreground="#ffffff"/>
                     <TextBox Name="DevName" Grid.Row="1" Margin="15 -2 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Deviant Name" TextAlignment="Left" FontSize="12px" Foreground="#e8e8e8"/>
                     <CheckBox Name="NudityCheckBox" Grid.Row="2" materialDesign:CheckBoxAssist.CheckBoxSize="21" Content="Nudity" IsChecked="False" Margin="13 5 0 0" Foreground="#7e7e7e" Padding="3 0 0 0" FontFamily="Franklin Gothic"/>
                     <CheckBox Name="WatermarkCheckBox"  Grid.Row="2" materialDesign:CheckBoxAssist.CheckBoxSize="21" Content="Watermark" IsChecked="False" Margin="83 5 0 0" Foreground="#7e7e7e" Padding="3 0 0 0" FontFamily="Franklin Gothic"/>
                 </Grid>
             </materialDesign:Card>
 
-            <Button Name="UploadBtn" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="0 10 0 0" Width="92" Foreground="White" Click="UploadBtn_Click">
+            <Button Name="UploadBtn" Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1d1d1d" BorderBrush="#1d1d1d" Margin="0 10 0 0" Width="92" Foreground="White" Click="UploadBtn_Click">
                 <materialDesign:PackIcon Kind="Upload" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
-            <Button Name="Yess" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="0 -32 15 0" HorizontalAlignment="Right" Width="92" Foreground="White" Click="Yess_Click">
+            <Button Name="Yess" Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1d1d1d" BorderBrush="#1d1d1d" IsEnabled="{Binding IsButtonEnabled}" Margin="0 -32 15 0" HorizontalAlignment="Right" Width="92" Foreground="White" Click="Yess_Click">
                 <materialDesign:PackIcon Kind="ChevronRight" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
-            <Button Name="Nope" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="0 -32 120 0" Width="92" HorizontalAlignment="Right" Foreground="White" Click="Nope_Click">
+            <Button Name="Nope" Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1d1d1d" BorderBrush="#1d1d1d" Margin="0 -32 120 0" Width="92" HorizontalAlignment="Right" Foreground="White" Click="Nope_Click">
                 <materialDesign:PackIcon Kind="ChevronLeft" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
-            <Button Name="Opener" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="15 -32 0 0" Width="92" HorizontalAlignment="Left" Foreground="White" Click="Opener_Click">
+            <Button Name="Opener" Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1d1d1d" BorderBrush="#1d1d1d" Margin="15 -32 0 0" Width="92" HorizontalAlignment="Left" Foreground="White" Click="Opener_Click">
                 <materialDesign:PackIcon Kind="DotsHorizontal" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
-            <Button Name="Find" Style="{DynamicResource MaterialDesignRaisedButton}" Margin="120 -32 0 0" Width="92" HorizontalAlignment="Left" Foreground="White" Click="Find_Click">
+            <Button Name="Find" Style="{DynamicResource MaterialDesignRaisedButton}" Background="#1d1d1d" BorderBrush="#1d1d1d" Margin="120 -32 0 0" Width="92" HorizontalAlignment="Left" Foreground="White" Click="Find_Click">
                 <materialDesign:PackIcon Kind="FindReplace" Width="28" Height="28">
                     <materialDesign:PackIcon.LayoutTransform>
                         <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
                     </materialDesign:PackIcon.LayoutTransform>
                 </materialDesign:PackIcon>
             </Button>
-            <Image Name="ImageHolder" Height="635" Width="440" Margin="0 10 0 0">
-                <Image.Effect>
+            <Border Canvas.Left="55" Canvas.Top="30" Width="512" Height="640" Margin="0 10 0 0" HorizontalAlignment="Center" VerticalAlignment="Top" BorderBrush="#121212" BorderThickness=".5" CornerRadius="8">
+                <Border.Effect>
                     <DropShadowEffect
-                        BlurRadius="40"
-                        Direction="90"
+                        BlurRadius="10"
+                        Direction="0"
                         ShadowDepth="0"
                         Opacity="1"
                         Color="Black"/>
-                </Image.Effect>
-            </Image>
+                </Border.Effect>
+                <Border Name="ReceiverColor" Margin="0 0 0 0" BorderBrush="#121212" BorderThickness="0" CornerRadius="8">
+                    <Grid HorizontalAlignment="Center">
+                        <Border Name="Mask" Background="#121212" BorderBrush="#121212" BorderThickness=".5" CornerRadius="6"/>
+                        <StackPanel>
+                            <Image Name="ImageHolder" Height="Auto" Width="512" Margin="0 0 0 0"
+                                xf:Animations.PrimaryBinding="{Binding IsPressed, ElementName=Yess}"   
+                                xf:Animations.Primary="{xf:Animate BasedOn={StaticResource Compound}}"
+                                xf:Animations.Secondary="{xf:Animate BasedOn={StaticResource Compound}}"
+                                xf:Animations.SecondaryBinding="{Binding IsPressed, ElementName=Nope}">     
+                                <Image.Effect>
+                                    <DropShadowEffect
+                                        BlurRadius="40"
+                                        Direction="90"
+                                        ShadowDepth="0"
+                                        Opacity="1"
+                                        Color="Black"/> 
+                                </Image.Effect>
+                            </Image>
+                            <StackPanel.OpacityMask>
+                                <VisualBrush Visual="{Binding ElementName=Mask}" />
+                            </StackPanel.OpacityMask>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Border>
+            
         </StackPanel>
         <materialDesign:Snackbar VerticalAlignment="Bottom" Margin="0 0 0 0" HorizontalAlignment="Stretch" IsActive="False" MessageQueue="{materialDesign:MessageQueue}" Name="Snackbar" Background="#202020" Foreground="#CBE4DE"/>
     </Grid>
