@@ -14,7 +14,7 @@ namespace DeviantArtUploader.src
 {
     internal class LoginProc
     {
-        public static string GetActiveTabUrl()
+        public static string GetSpecificTabUrl(string container)
         {
             Process[] procsChrome = Process.GetProcessesByName("chrome");
 
@@ -34,7 +34,11 @@ namespace DeviantArtUploader.src
                     var SearchBar = root.FindFirst(TreeScope.Descendants, new PropertyCondition(AutomationElement.NameProperty, "Address and search bar"));
 
                     string SomethingToReturn = (string)SearchBar.GetCurrentPropertyValue(ValuePatternIdentifiers.ValueProperty);
-                    if (SomethingToReturn.Contains("code=")) return SomethingToReturn;
+                    if (SomethingToReturn.Contains(container))
+                    {
+                        proc.Close();
+                        return SomethingToReturn;
+                    }
                 }
             }
         }

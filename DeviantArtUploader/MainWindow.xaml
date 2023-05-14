@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:DeviantArtUploader"
         xmlns:xf="clr-namespace:XamlFlair;assembly=XamlFlair.WPF"
         mc:Ignorable="d"
-        Title="Deviant Art Uploader" Height="204" Width="550" ResizeMode="CanMinimize" Background="#1f1f1f" Opacity="1">
+        Title="DevUpload" Height="204" Width="550" ResizeMode="CanMinimize" Background="#1f1f1f" Opacity="1">
     <Grid xf:Animations.Primary="{xf:Animate BasedOn={StaticResource FadeIn}}">
         <StackPanel>
             <StackPanel.Effect>

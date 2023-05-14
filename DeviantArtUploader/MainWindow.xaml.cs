@@ -142,7 +142,7 @@ namespace DeviantArtUploader
 
                     Process.Start("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe", authorizationRequest);
 
-                    string redirected = LoginProc.GetActiveTabUrl();
+                    string redirected = LoginProc.GetSpecificTabUrl("code=");
                     string authorization_code = redirected.Substring(redirected.IndexOf('=') + 1);
 
                     Notify($"ℹ️ Found Auth Key: {authorization_code}", 1);
@@ -268,7 +268,7 @@ namespace DeviantArtUploader
 
                 timer.Tick += (s, e) =>
                 {
-                    x += 0.01;
+                    x += 0.02;
                     if (x >= 1)
                     {
                         timer.Stop();
