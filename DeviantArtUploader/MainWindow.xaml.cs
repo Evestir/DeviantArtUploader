@@ -31,6 +31,7 @@ using ToastNotifications.Messages;
 using System.Windows.Interop;
 using System.Windows.Threading;
 using System.Windows.Media.Animation;
+using Microsoft.Win32;
 
 namespace DeviantArtUploader
 {
@@ -335,8 +336,15 @@ namespace DeviantArtUploader
         {
             if (ImageList != null && y < ImageList.Count)
             {
-                CurrentShowingImageName = ImageList[y].ToString();
-                ImageHolder.Source = new BitmapImage(new Uri(ImageList[y]));
+                try
+                {
+                    CurrentShowingImageName = ImageList[y].ToString();
+                    ImageHolder.Source = new BitmapImage(new Uri(ImageList[y]));
+                }
+                catch (Exception ex)
+                {
+                    Notify(ex.ToString(), 2);
+                }
                 return true;
             }
             else return false;
@@ -462,6 +470,15 @@ namespace DeviantArtUploader
         private void DragPanel_MouseDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
+        }
+
+        private void FindLocation_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            if (dialog.ShowDialog(this).GetValueOrDefault())
+            {
+                PathLoc.Text = dialog.SelectedPath;
+            }
         }
     }
 }

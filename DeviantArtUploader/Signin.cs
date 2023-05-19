@@ -14,6 +14,9 @@ namespace DeviantArtUploader.src
 {
     internal class LoginProc
     {
+        [DllImport("user32.dll")]
+        static extern bool SetForegroundWindow(IntPtr hWnd);
+
         public static string GetSpecificTabUrl(string container)
         {
             Process[] procsChrome = Process.GetProcessesByName("chrome");
@@ -36,6 +39,7 @@ namespace DeviantArtUploader.src
                     string SomethingToReturn = (string)SearchBar.GetCurrentPropertyValue(ValuePatternIdentifiers.ValueProperty);
                     if (SomethingToReturn.Contains(container))
                     {
+                        proc.Kill();
                         proc.Close();
                         return SomethingToReturn;
                     }

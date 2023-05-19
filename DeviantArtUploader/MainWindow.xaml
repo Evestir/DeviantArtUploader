@@ -27,6 +27,13 @@
                     </Grid.RowDefinitions>
                     <TextBox Name="PathLoc" Grid.Row="0" Margin="15 0 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Image Directory" TextAlignment="Left" FontSize="12px" Foreground="#ffffff"/>
                     <TextBox Name="DevName" Grid.Row="1" Margin="15 -2 15 0" Style="{StaticResource MaterialDesignFloatingHintTextBox}" materialDesign:HintAssist.Hint="Deviant Name" TextAlignment="Left" FontSize="12px" Foreground="#e8e8e8"/>
+                    <Label Name="FindLocation" Style="{x:Null}" Background="#1d1d1d" BorderBrush="#1d1d1d" Margin="460 0 0 0" Width="30" Height="20" Foreground="White" MouseLeftButtonUp="FindLocation_MouseLeftButtonUp" Cursor="Hand">
+                        <materialDesign:PackIcon Kind="DotsHorizontal" Width="20" Height="20">
+                            <materialDesign:PackIcon.LayoutTransform>
+                                <ScaleTransform CenterX="0.0" CenterY="1" ScaleX="1" ScaleY="0.9"/>
+                            </materialDesign:PackIcon.LayoutTransform>
+                        </materialDesign:PackIcon>
+                    </Label>
                     <CheckBox Name="NudityCheckBox" Grid.Row="2" materialDesign:CheckBoxAssist.CheckBoxSize="21" Content="Nudity" IsChecked="False" Margin="13 5 0 0" Foreground="#7e7e7e" Padding="3 0 0 0" FontFamily="Franklin Gothic"/>
                     <CheckBox Name="WatermarkCheckBox"  Grid.Row="2" materialDesign:CheckBoxAssist.CheckBoxSize="21" Content="Watermark" IsChecked="False" Margin="83 5 0 0" Foreground="#7e7e7e" Padding="3 0 0 0" FontFamily="Franklin Gothic"/>
                 </Grid>
